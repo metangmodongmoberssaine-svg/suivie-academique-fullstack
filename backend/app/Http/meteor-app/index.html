@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Now</title>
+
+    <!-- GOOGLE FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- SCREEN ERROR -->
+    <section id="screen-error" class="screen">
+        <header class="top-header">
+            <img src="images/logo.svg" alt="weather now">
+            <div class="units-dropdown">
+                <button id="units-btn" class="units-btn">Units ▾</button>
+                <img src="images/icon-units.svg" alt="units">   
+                <div id="units-menu" class="dropdown hidden">
+                    <p class="dropdown-title">Temperature</p>
+                    <div class="dropdown-item">Celsius (°C)</div>
+                    <div class="dropdown-item">Fahrenheit (°F)</div>
+
+                    <p class="dropdown-title">Wind</p>
+                    <div class="dropdown-item">km/h</div>
+                    <div class="dropdown-item">mph</div>
+
+                    <p class="dropdown-title">Precipitation</p>
+                    <div class="dropdown-item">Millimeters (mm)</div>
+                    <div class="dropdown-item">Inches (in)</div>
+                </div>
+            </div>
+        </header>
+
+        <div class="center-box">
+            <div class="error-icon"></div>
+            <img src="images/icon-error.svg" alt="">
+            <h1>Something went wrong</h1>
+            <p>We couldn't connect to the server (API error). Please try again in a few moments.</p>
+            <button id="retry-btn" class="retry-btn">⟳ Retry</button>
+        </div>
+    </section>
+
+    <!-- SCREEN LOGIN -->
+    <section id="screen-login" class="screen hidden">
+        <div class="center-box">
+            <h1 class="title">Weather Now</h1>
+            <p>Check real-time weather anywhere in the world.</p>
+            <button id="enter-app-btn" class="primary-btn">Enter the App</button>
+        </div>
+    </section>
+
+    <!-- SCREEN APP -->
+    <section id="screen-app" class="screen hidden">
+        <header class="top-header">
+            <div class="logo">🌤️ Weather Now</div>
+
+            <div class="units-dropdown">
+                <button id="units-btn2" class="units-btn">Units ▾</button>
+                <div id="units-menu2" class="dropdown hidden">
+                    <p class="dropdown-title">Temperature</p>
+                    <div class="dropdown-item">Celsius (°C)</div>
+                    <div class="dropdown-item">Fahrenheit (°F)</div>
+
+                    <p class="dropdown-title">Wind</p>
+                    <div class="dropdown-item">km/h</div>
+                    <div class="dropdown-item">mph</div>
+
+                    <p class="dropdown-title">Precipitation</p>
+                    <div class="dropdown-item">Millimeters (mm)</div>
+                    <div class="dropdown-item">Inches (in)</div>
+                </div>
+            </div>
+        </header>
+
+        <h1 class="main-title">How's the sky looking today?</h1>
+
+        <div class="search-wrapper">
+            <input id="search-input" placeholder="Search for a place...">
+            <button id="search-btn" class="primary-btn">Search</button>
+        </div>
+
+        <div class="main-card">
+            <div>
+                <h2 id="city-name">City</h2>
+                <p id="date-text">Date</p>
+            </div>
+
+            <div class="temp-block">
+                <span id="weather-icon" class="emoji-icon">☀️</span>
+                <span id="big-temp" class="big-temp">--°</span>
+            </div>
+        </div>
+
+        <div class="details-grid">
+            <div class="detail"><span>Feels Like</span><p id="feels-like">--°</p></div>
+            <div class="detail"><span>Humidity</span><p id="humidity">--%</p></div>
+            <div class="detail"><span>Wind</span><p id="wind">-- km/h</p></div>
+            <div class="detail"><span>Precipitation</span><p id="precip">-- mm</p></div>
+        </div>
+
+        <h3 class="section-title">Daily forecast</h3>
+        <div id="daily-forecast" class="forecast-row"></div>
+
+        <h3 class="section-title">Hourly forecast</h3>
+        <div id="hourly-forecast" class="forecast-row"></div>
+    </section>
+
+    <script src="app.js"></script>
+
+</body>
+</html>

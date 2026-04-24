@@ -1,0 +1,9 @@
+{
+  "/storage": {
+    "target": "http://suivie-academique.local",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "pathRewrite": { "^/storage": "/storage" }
+  }
+}

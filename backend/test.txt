@@ -1,0 +1,111 @@
+Récapitulatif des actions effectuées pour faire passer les tests (Programme et Salle)
+
+Date : 2025-12-19
+
+Résumé :
+J'ai analysé, corrigé et ajouté des tests pour les entités `Programme` et `Salle` afin que leurs tests CRUD passent correctement en environnement de test Laravel (RefreshDatabase + authentification Sanctum).
+
+Détails (chronologique) :
+
+1) Inspection initiale
+- Vérification des fichiers et routes :
+  - `routes/api.php` (présence de Route::apiResource('programmes', ProgrammeController::class))
+  - `app/Http/Controllers/ProgrammeController.php`
+  - `database/factories/ProgrammeFactory.php`
+  - `app/Models/Programme.php` (modèle initial)
+  - `database/migrations/2025_11_15_060929_create_programmes_table.php`
+  - `app/Models/Salle.php` (modèle initial)
+  - `database/factories/SalleFactory.php`
+  - `app/Http/Controllers/SalleController.php`
+  - `database/migrations/2025_11_12_053623_create_salles_table.php`
+  - tests existants `tests/Feature/programmeTest.php` et `tests/Feature/SalleTest.php`
+
+2) Modifications sur `Programme`
+- Fichier modifié : `app/Models/Programme.php`
+  - Correction de la faute de frappe dans le champ remplissable : `code_personel` -> `code_personnel`.
+  - Retrait de la configuration d'une clé primaire personnalisée `code_programme` (le schéma de migration utilise `$table->id()`), passage à la clé primaire par défaut `id`.
+  - Mise à jour de l'attribut `$fillable` pour correspondre aux colonnes réelles de la table `programme` : `code_ec`, `code_salle`, `heure_fin`, `heure_debut`, `code_personnel`, `nombre_dheure`, `statut`, `date`.
+
+- Fichier inspecté : `database/factories/ProgrammeFactory.php` (factory utilisée pour créer des enregistrements de test).
+- Constat initial : les tests créaient des valeurs pour `code_programme` alors que la table utilise `id`.
+
+3) Tests pour `Programme`
+- Fichier créé/remplacé : `tests/Feature/programmeTest.php`
+  - Remplacement du test d'exemple par une suite de tests CRUD :
+    - `test_index_returns_programmes`
+    - `test_store_creates_programme`
+    - `test_show_returns_programme`
+    - `test_update_modifies_programme`
+    - `test_delete_removes_programme`
+  - Utilisation de `RefreshDatabase` pour isoler les tests.
+  - Utilisation de `User::factory()->create()` + `actingAs(..., 'sanctum')` pour appeler les routes protégées.
+  - Ajustement des assertions pour vérifier la présence des enregistrements dans la table `programme` (par `id` ou par champs existants).
+  - Correction d'un payload de test (faire en sorte que `code_salle` respecte les règles de validation, ex.: longueur minimale) pour éviter l'erreur 500 causée par la validation.
+
+4) Exécution et débogage pour `Programme`
+- Commandes lancées :
+  - `php artisan test --filter=ProgrammeTest` (exécution ciblée)
+- Erreurs rencontrées et corrigées :
+  - Erreur SQL due à l'insertion de `code_programme` (la colonne n'existe pas) → correction : adapter le modèle/tests pour utiliser la colonne `id` et ne pas fournir `code_programme` lors de la création.
+  - Erreur 500 lors du store due à la validation (champ `code_salle` trop court) → correction du payload de test (valeur respectant la règle `min:5`).
+- Résultat final : tous les tests `ProgrammeTest` passent (5 tests).
+
+5) Modifications sur `Salle`
+- Fichier modifié : `app/Models/Salle.php`
+  - Retrait de la clé primaire personnalisée `code_salle` (la migration crée `$table->id()`), passage à `id` par défaut.
+  - Mise à jour de `$fillable` pour `contenance` et `status`.
+
+- Fichier créé/remplacé : `tests/Feature/SalleTest.php`
+  - Ajout d'une suite de tests CRUD analogues à `ProgrammeTest` (index, store, show, update, delete).
+  - Utilisation de `RefreshDatabase` et `actingAs(..., 'sanctum')`.
+  - Vérifications en base sur la table `salle` (`id`, `contenance`, `status`).
+
+6) Exécution pour `Salle`
+- Commande lancée :
+  - `php artisan test --filter=SalleTest -v`
+- Résultat final : tous les tests `SalleTest` passent (5 tests).
+
+7) Commandes exécutées durant le processus (exemples)
+- `php artisan test --filter=ProgrammeTest`
+- `php artisan test --filter=ProgrammeTest -v`
+- `php artisan test --filter=SalleTest -v`
+
+8) Fichiers créés/modifiés
+- Modifiés :
+  - `app/Models/Programme.php` (corrections fillable / clé primaire)
+  - `tests/Feature/programmeTest.php` (remplacé, tests CRUD)
+  - `app/Models/Salle.php` (enlever clé primaire personnalisée, fillable)
+  - `tests/Feature/SalleTest.php` (remplacé, tests CRUD)
+
+- Inspectés (sans modification) :
+  - `database/factories/ProgrammeFactory.php`
+  - `app/Http/Controllers/ProgrammeController.php`
+  - `routes/api.php`
+  - `database/migrations/2025_11_15_060929_create_programmes_table.php`
+  - `database/factories/SalleFactory.php`
+  - `app/Http/Controllers/SalleController.php`
+  - `database/migrations/2025_11_12_053623_create_salles_table.php`
+
+9) Résumé état final
+- `ProgrammeTest` : 5 tests, tous passés.
+- `SalleTest` : 5 tests, tous passés.
+
+10) Recommandations / actions possibles suivantes
+- Commit des modifications : je peux préparer un commit contenant tous les changements si vous voulez.
+- Exécuter l'ensemble de la suite de tests du projet (toutes les feature/unit tests) : commande :
+
+```bash
+php artisan test
+```
+
+- Vérifier et harmoniser d'autres modèles qui pourraient attendre des clés personnalisées (ex: `Enseigne`, `Personnel`, etc.) afin d'éviter des incohérences similaires.
+
+---
+Si vous voulez, je peux :
+- préparer et exécuter un commit git (message proposé : "Add CRUD tests for Programme and Salle; fix models") ;
+- lancer la suite complète de tests ;
+- créer un commit séparé par entité.
+
+Fichier créé : `test.txt` (chemin : C:\wamp64\www\suivie-academique-backend\test.txt)
+
+Fin du récapitulatif.
