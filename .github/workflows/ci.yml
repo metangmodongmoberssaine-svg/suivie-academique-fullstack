@@ -21,6 +21,8 @@ jobs:
           MYSQL_USER: laravel_user
           MYSQL_PASSWORD: laravel_pass
           MYSQL_ROOT_PASSWORD: root_pass
+        ports:
+             - 3306:3306
         options: >-
           --health-cmd="mysqladmin ping"
           --health-interval=10s
