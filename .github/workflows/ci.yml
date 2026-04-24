@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [ develop, main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ---- BACKEND Laravel ----
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          tools: composer
+
+      - name: Install backend dependencies
+        working-directory: ./backend
+        run: composer install --no-progress
+
+      - name: Copy environment
+        working-directory: ./backend
+        run: cp .env.example .env
+
+      - name: Generate app key
+        working-directory: ./backend
+        run: php artisan key:generate
+
+      - name: Run backend unit tests
+        working-directory: ./backend
+        run: php artisan test
+
+      - name: Lint backend (PHP_CodeSniffer)
+        working-directory: ./backend
+        run: |
+          composer require --dev squizlabs/php_codesniffer
+          ./vendor/bin/phpcs --standard=PSR12 app/
+
+      # ---- FRONTEND Angular ----
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Lint frontend
+        working-directory: ./frontend
+        run: npm run lint   # si tu as un script "lint" dans package.json
+
+      - name: Run frontend unit tests
+        working-directory: ./frontend
+        run: npm test -- --watch=false --browsers=ChromeHeadless
