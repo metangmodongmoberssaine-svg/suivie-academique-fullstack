@@ -43,3 +43,6 @@ jobs:
     steps:
       - name: Deploy to production
         run: echo "Production OK"
+    steps:
+      - name: Deploy to production
+        run: echo "Production OK"
