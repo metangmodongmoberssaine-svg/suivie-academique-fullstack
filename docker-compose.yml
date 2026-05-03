@@ -1,6 +1,8 @@
-version: '3.9'
+
 
 services:
+
+  # ── NODE EXPORTER ────────────────────────────────
   node-exporter:
     image: prom/node-exporter:latest
     container_name: node_exporter
@@ -94,6 +96,20 @@ services:
     networks:
       - app_network
 
+  # ── SONARQUBE ────────────────────────────────────
+  sonarqube:
+    image: sonarqube:community
+    container_name: sonarqube
+    ports:
+      - "9000:9000"
+    volumes:
+      - sonar_data:/opt/sonarqube/data
+      - sonar_logs:/opt/sonarqube/logs
+      - sonar_extensions:/opt/sonarqube/extensions
+    networks:
+      - app_network
+    restart: unless-stopped
+
 networks:
   app_network:
     driver: bridge
@@ -101,3 +117,6 @@ networks:
 volumes:
   mysql_data:
   grafana_data:
+  sonar_data:
+  sonar_logs:
+  sonar_extensions:
